@@ -6,6 +6,9 @@ import "./Ownable.sol";
 import "./Pausable.sol";
 import "./ERC20.sol";
 
+/**
+* @title StandardToken
+*/
 contract StandardToken is ERC20 {
   using SafeMath for uint256;
 
@@ -78,7 +81,9 @@ contract StandardToken is ERC20 {
   }
   
 
-
+  /** 
+  * @notice Blacklist an adddress
+  */
   function _blackList(address _address, bool _isBlackListed) internal returns (bool) {
 	require(tokenBlacklist[_address] != _isBlackListed);
 	tokenBlacklist[_address] = _isBlackListed;
@@ -88,6 +93,9 @@ contract StandardToken is ERC20 {
 
 }
 
+/**
+* @title PausableToken
+*/
 contract PausableToken is StandardToken, Pausable {
 
   function transfer(address _to, uint256 _value) public whenNotPaused returns (bool) {
@@ -116,24 +124,31 @@ contract PausableToken is StandardToken, Pausable {
   
 }
 
+/**
+* @title WhyNotToken
+*/
 contract WhyNotToken is PausableToken {
-    string public name;
-    string public symbol;
-    uint public decimals;
-    event Mint(address indexed from, address indexed to, uint256 value);
-    event Burn(address indexed burner, uint256 value);
+  string public name;
+  string public symbol;
+  uint public decimals;
+  event Mint(address indexed from, address indexed to, uint256 value);
+  event Burn(address indexed burner, uint256 value);
 
 	
-    constructor(string memory _name, string memory _symbol, uint256 _decimals, uint256 _supply, address tokenOwner) public {
-        name = _name;
-        symbol = _symbol;
-        decimals = _decimals;
-        totalSupply = _supply * 10**_decimals;
-        balances[tokenOwner] = totalSupply;
-        owner = tokenOwner;
-        emit Transfer(address(0), tokenOwner, totalSupply);
-    }
+  constructor(string memory _name, string memory _symbol, uint256 _decimals, uint256 _supply, address tokenOwner) public {
+      name = _name;
+      symbol = _symbol;
+      decimals = _decimals;
+      totalSupply = _supply * 10**_decimals;
+      balances[tokenOwner] = totalSupply;
+      _owner = tokenOwner;
+      emit Transfer(address(0), tokenOwner, totalSupply);
+  }
 	
+  /**
+  * @notice Burn tokens
+  * @param _value The number of tokens to burn
+  */
 	function burn(uint256 _value) public {
 		_burn(msg.sender, _value);
 	}
@@ -146,11 +161,16 @@ contract WhyNotToken is PausableToken {
 		emit Transfer(_who, address(0), _value);
 	}
 
-    function mint(address account, uint256 amount) onlyOwner public {
+  /**
+  * @notice Mint new tokens
+  * @param account The address where new tokens are minted
+  * @param amount The number of tokens to mint
+  */
+  function mint(address account, uint256 amount) onlyOwner public {
 
-        totalSupply = totalSupply.add(amount);
-        balances[account] = balances[account].add(amount);
-        emit Mint(address(0), account, amount);
-        emit Transfer(address(0), account, amount);
-    }
+      totalSupply = totalSupply.add(amount);
+      balances[account] = balances[account].add(amount);
+      emit Mint(address(0), account, amount);
+      emit Transfer(address(0), account, amount);
+  }
 }

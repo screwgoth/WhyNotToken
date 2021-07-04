@@ -3,6 +3,9 @@ pragma solidity ^0.4.24;
 
 import "./Ownable.sol";
 
+/** 
+* @title Pausable
+*/
 contract Pausable is Ownable {
   event Pause();
   event Unpause();
